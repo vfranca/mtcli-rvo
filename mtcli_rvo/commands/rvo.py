@@ -15,6 +15,7 @@ from mtcli_rvo.conf import (
 log = setup_logger()
 
 @click.command(help="Plugin para cálculo e exibição do Volume Relativo (RVO).")
+@click.version_option(package_name="mtcli-rvo")
 @click.option("--symbol", "-s", default=SYMBOL, show_default=True, help="Simbolo do ativo.")
 @click.option("--period", "-p", default=PERIOD, show_default=True, help="Timeframe (ex: M1, M5, M15, H1, D1).")
 @click.option("--bars", "-b", default=BARS, show_default=True, help="Número de barras para média de volume.")
