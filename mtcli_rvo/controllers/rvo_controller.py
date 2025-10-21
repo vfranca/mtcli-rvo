@@ -1,4 +1,5 @@
 import MetaTrader5 as mt5
+
 from mtcli.logger import setup_logger
 from mtcli_rvo.models.rvo_model import calcular_rvo
 
@@ -16,15 +17,37 @@ TIMEFRAMES = {
     "MN1": mt5.TIMEFRAME_MN1,
 }
 
+
 def converter_timeframe(tf_str: str):
     """Converte um texto como 'M5' ou 'H1' para o código do MT5."""
     return TIMEFRAMES.get(tf_str.upper(), mt5.TIMEFRAME_M5)
 
-def processar_rvo(symbol: str, timeframe: str = "M5", periodos: int = 20, volume: str = "tick", historico: int = 5, export: bool = False, json_out: bool = False):
+
+def processar_rvo(
+    symbol: str,
+    timeframe: str = "M5",
+    periodos: int = 20,
+    historico: int = 5,
+    tipo_volume: str = "tick",
+    export: bool = False,
+    json_out: bool = False,
+):
     """Controla o fluxo: cálculo, exibição e exportação opcional do RVO."""
-    if not volume.lower() in ["tick", "real"]:
+    if tipo_volume.lower() not in ["tick", "real"]:
         log.error(f"Volume invalido {volume}")
         raise ValueError(f"Volume invalido {volume}")
 
     tf_code = converter_timeframe(timeframe)
-    return calcular_rvo(symbol, timeframe=tf_code, periodos=periodos, volume=volume, historico=historico)
+    resultado = calcular_rvo(
+        symbol,
+        timeframe=tf_code,
+        periodos=periodos,
+        historico=historico,
+        tipo_volume=tipo_volume,
+    )
+
+    if not resultado:
+        log.error("Falha ao calcular RVO — sem dados retornados")
+        return
+
+    return resultado

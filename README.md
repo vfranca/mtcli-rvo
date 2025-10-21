@@ -1,28 +1,15 @@
-\# plugin-exemplo
+# mtcli-rvo
 
-&nbsp; 
+**mtcli-rvo** é um plugin para o ecossistema **MTCLI**, desenvolvido para calcular e exibir o **Indicador de Volume Relativo (RVO – Relative Volume Oscillator)** diretamente no terminal, com suporte a exportação de dados e integração nativa ao MetaTrader 5.
 
-Plugin do mtcli que adiciona o comando plugin de exemplo.
-
-&nbsp; 
+O **RVO** é uma métrica que compara o volume atual de um ativo com sua média histórica, ajudando a identificar **picos de volume**, **confirmação de tendências** e **movimentos anormais de fluxo**.
 
 ---
 
-&nbsp; 
+## Instalação
 
-\## Instalação
+Clone ou copie o repositório do plugin e, dentro da pasta principal, execute:
 
-&nbsp; 
-
-```cmd
-
-git clone git@github.com:vfranca/plugin-exemplo.git
-
-cd plugin-exemplo
-
-pip install .
-
-```
-
-
+```bash
+pip install -e .
 

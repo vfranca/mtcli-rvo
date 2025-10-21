@@ -1,14 +1,30 @@
-import click
-import pandas as pd
+from datetime import datetime
 import json
 import os
-from datetime import datetime
+
+import click
+import pandas as pd
+
 from mtcli.logger import setup_logger
 
 log = setup_logger()
 
-def exibir_rvo(dados: dict, timeframe: str, export: bool = False, json_out: bool = False):
-    """Exibe o RVO formatado e exporta para CSV/JSON conforme opções."""
+
+def formatar_numero(valor: float, decimais: int = 2) -> str:
+    """Formata número no padrão brasileiro (1.234,56)."""
+    return (
+        f"{valor:,.{decimais}f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    )
+
+
+def exibir_rvo(
+    dados: dict,
+    timeframe: str,
+    tipo_volume: str,
+    export: bool = False,
+    json_out: bool = False,
+):
+    """Exibe o RVO formatado e exporta CSV/JSON."""
     symbol = dados["symbol"]
     rvo_atual = dados["rvo_atual"]
     vol_atual = dados["volume_atual"]
@@ -18,14 +34,19 @@ def exibir_rvo(dados: dict, timeframe: str, export: bool = False, json_out: bool
     direcao = "acima da média" if rvo_atual > 1 else "abaixo da média"
     cor_direcao = "green" if rvo_atual > 1 else "red"
 
-    click.echo(click.style("\nIndicador de Volume Relativo (RVO)", fg="cyan", bold=True))
-    click.echo(click.style(f"Ativo: {symbol}", fg="yellow"))
+    click.echo(click.style("Indicador de Volume Relativo (RVO)", fg="cyan", bold=True))
+    click.echo(click.style(f"Símbolo: {symbol}", fg="yellow"))
     click.echo(f"Timeframe: {timeframe}")
-    click.echo(f"Volume atual: {vol_atual:,.0f}")
-    click.echo(f"Volume médio: {vol_medio:,.0f}")
-    click.echo(click.style(f"RVO atual: {rvo_atual:.2f} — {direcao}", fg=cor_direcao))
+    click.echo(f"Tipo de volume: {tipo_volume}")
+    click.echo(f"Volume atual: {formatar_numero(vol_atual, 0)}")
+    click.echo(f"Volume médio: {formatar_numero(vol_medio, 0)}")
+    click.echo(
+        click.style(
+            f"RVO atual: {formatar_numero(rvo_atual, 2)} — {direcao}", fg=cor_direcao
+        )
+    )
 
-    click.echo(click.style("\nHistórico recente do RVO:", bold=True))
+    click.echo("\nHistórico recente do RVO:")
     linhas = []
     rvo_anterior = None
 
@@ -44,30 +65,40 @@ def exibir_rvo(dados: dict, timeframe: str, export: bool = False, json_out: bool
                 seta = click.style("→", fg="yellow")
 
             variacao = ((valor - rvo_anterior) / rvo_anterior) * 100
-            delta = f"{variacao:+.1f}%"
+            delta = f"{variacao:+.1f}%".replace(".", ",")
         else:
             delta = "—"
 
-        click.echo(f"  {ts:%d/%m %H:%M} — {valor:.2f} {seta} ({delta})")
-        linhas.append({
-            "datetime": ts.isoformat(),
-            "rvo": round(valor, 4),
-            "delta_%": delta,
-        })
+        click.echo(f"  {ts:%d/%m %H:%M} — {formatar_numero(valor, 2)} {seta} ({delta})")
+        linhas.append(
+            {
+                "datetime": ts.isoformat(),
+                "rvo": round(valor, 4),
+                "delta_%": delta,
+            }
+        )
         rvo_anterior = valor
 
     # Exportar CSV
     if export:
-        nome_arquivo = f"rvo_{symbol}_{timeframe}.csv"
+        nome_arquivo = f"rvo_{symbol}_{timeframe}_{tipo_volume}.csv"
         df = pd.DataFrame(linhas)
         df.to_csv(nome_arquivo, index=False)
-        click.echo(click.style(f"\nCSV exportado para: {os.path.abspath(nome_arquivo)}", fg="cyan"))
+        click.echo(
+            click.style(
+                f"\nArquivo CSV exportado: {os.path.abspath(nome_arquivo)}", fg="cyan"
+            )
+        )
         log.info(f"Arquivo CSV exportado: {nome_arquivo}")
 
     # Exportar JSON
     if json_out:
-        nome_arquivo = f"rvo_{symbol}_{timeframe}.json"
+        nome_arquivo = f"rvo_{symbol}_{timeframe}_{tipo_volume}.json"
         with open(nome_arquivo, "w", encoding="utf-8") as f:
             json.dump(linhas, f, ensure_ascii=False, indent=2)
-        click.echo(click.style(f"💾 JSON exportado para: {os.path.abspath(nome_arquivo)}", fg="cyan"))
+        click.echo(
+            click.style(
+                f"Arquivo JSON exportado: {os.path.abspath(nome_arquivo)}", fg="cyan"
+            )
+        )
         log.info(f"Arquivo JSON exportado: {nome_arquivo}")

@@ -1,8 +1,11 @@
 from click.testing import CliRunner
+
 from mtcli_rvo.commands.rvo import rvo
+
 
 def test_cli_calc_help():
     runner = CliRunner()
-    result = runner.invoke(rvo, ["calc", "--help"])
+    result = runner.invoke(rvo["--help"])
     assert result.exit_code == 0
+    assert "--volume" in result.output
     assert "Calcula e exibe o indicador RVO" in result.output
