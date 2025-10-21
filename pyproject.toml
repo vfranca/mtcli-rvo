@@ -1,7 +1,7 @@
 [project]
-name = "plugin-exemplo"
+name = "mtcli-rvo"
 version = "0.1.0"
-description = "Plugin do mtcli"
+description = "Plugin mtcli do RVO (Relative Volume Oscilator)"
 authors = [
     {name = "Valmir França da Silva",email = "vfranca3@gmail.com"}
 ]
@@ -9,11 +9,11 @@ readme = "README.md"
 license = "GPL-3.0"
 requires-python = ">=3.10,<3.14"
 dependencies = [
-    "mtcli>=1.18.1"
+    "mtcli>=3.2.0"
 ]
 
 [project.entry-points."mtcli.plugins"]
-plugin_exemplo = "plugin_exemplo.plugin:register"
+mtcli_rvo = "mtcli_rvo.plugin:register"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
