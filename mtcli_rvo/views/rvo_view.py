@@ -35,7 +35,7 @@ def exibir_rvo(
     cor_direcao = "green" if rvo_atual > 1 else "red"
 
     click.echo(click.style("Indicador de Volume Relativo (RVO)", fg="cyan", bold=True))
-    click.echo(click.style(f"Símbolo: {symbol}", fg="yellow"))
+    click.echo(click.style(f"Ativo: {symbol}", fg="yellow"))
     click.echo(f"Timeframe: {timeframe}")
     click.echo(f"Tipo de volume: {tipo_volume}")
     click.echo(f"Volume atual: {formatar_numero(vol_atual, 0)}")
