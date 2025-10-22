@@ -7,6 +7,7 @@ from mtcli_rvo.conf import (
     PERIOD,
     SYMBOL,
     VOLUME,
+    HISTORICO,
 )
 from mtcli_rvo.controllers.rvo_controller import processar_rvo
 from mtcli_rvo.views.rvo_view import exibir_rvo
@@ -40,7 +41,7 @@ log = setup_logger()
 @click.option(
     "--historico",
     "-h",
-    default=5,
+    default=HISTORICO,
     show_default=True,
     help="Número de candles a exibir no histórico.",
 )
