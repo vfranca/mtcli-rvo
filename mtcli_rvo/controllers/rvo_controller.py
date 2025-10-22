@@ -20,7 +20,7 @@ TIMEFRAMES = {
 
 def converter_timeframe(tf_str: str):
     """Converte um texto como 'M5' ou 'H1' para o código do MT5."""
-    return TIMEFRAMES.get(tf_str.upper(), mt5.TIMEFRAME_M5)
+    return TIMEFRAMES.get(str(tf_str).upper(), mt5.TIMEFRAME_M5)
 
 
 def processar_rvo(
@@ -34,8 +34,8 @@ def processar_rvo(
 ):
     """Controla o fluxo: cálculo, exibição e exportação opcional do RVO."""
     if tipo_volume.lower() not in ["tick", "real"]:
-        log.error(f"Volume invalido {volume}")
-        raise ValueError(f"Volume invalido {volume}")
+        log.error(f"Volume inválido {tipo_volume}")
+        raise ValueError(f"Volume inválido {tipo_volume}")
 
     tf_code = converter_timeframe(timeframe)
     resultado = calcular_rvo(

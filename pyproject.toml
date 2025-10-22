@@ -1,16 +1,18 @@
 [project]
 name = "mtcli-rvo"
-version = "0.1.0"
+version = "1.0.0.dev0"
 description = "Plugin mtcli do RVO (Relative Volume Oscilator)"
 authors = [
-    {name = "Valmir França da Silva",email = "vfranca3@gmail.com"}
+    {name = "Valmir França",email = "vfranca3@gmail.com"}
 ]
 readme = "README.md"
 license = "GPL-3.0"
 requires-python = ">=3.10,<3.14"
 dependencies = [
     "mtcli>=3.2.0",
-    "pandas (>=2.3.3,<3.0.0)"
+    "pandas (>=2.3.3,<3.0.0)",
+    "click (>=8.3.0,<9.0.0)",
+    "metatrader5 (>=5.0.5370,<6.0.0)"
 ]
 
 [project.entry-points."mtcli.plugins"]

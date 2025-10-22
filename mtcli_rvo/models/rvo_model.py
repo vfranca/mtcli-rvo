@@ -25,11 +25,14 @@ def calcular_rvo(
     if df.empty:
         return None
 
-    # Seleciona o tipo de volume
-    if tipo_volume == "real" and "real_volume" in df.columns:
-        vol_col = "real_volume"
-    else:
-        vol_col = "tick_volume"
+    # Seleciona o tipo de volume com fallback para tick_volume
+    vol_col = "tick_volume"
+    if tipo_volume == "real":
+        if "real_volume" in df.columns:
+            vol_col = "real_volume"
+        else:
+            log.warning(f"Volume real não disponível para {symbol}; usando tick_volume.")
+            vol_col = "tick_volume"
 
     df["media_volume"] = df[vol_col].rolling(window=periodos).mean()
     df["rvo"] = df[vol_col] / df["media_volume"]
@@ -42,9 +45,9 @@ def calcular_rvo(
         "symbol": symbol,
         "volume_tipo": tipo_volume,
         "volume_atual": float(ultimo[vol_col]),
-        "volume_medio": float(ultimo["media_volume"]),
-        "rvo_atual": float(ultimo["rvo"]),
+        "volume_medio": float(ultimo["media_volume"]) if pd.notna(ultimo["media_volume"]) else 0.0,
+        "rvo_atual": float(ultimo["rvo"]) if pd.notna(ultimo["rvo"]) else 0.0,
         "historico": [
-            {"time": int(r["time"]), "rvo": float(r["rvo"])} for r in historico_data
+            {"time": int(r["time"]), "rvo": float(r["rvo"]) if pd.notna(r["rvo"]) else 0.0} for r in historico_data
         ],
     }

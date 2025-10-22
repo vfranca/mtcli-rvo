@@ -12,9 +12,10 @@ log = setup_logger()
 
 def formatar_numero(valor: float, decimais: int = 2) -> str:
     """Formata número no padrão brasileiro (1.234,56)."""
-    return (
-        f"{valor:,.{decimais}f}".replace(",", "X").replace(".", ",").replace("X", ".")
-    )
+    try:
+        return f"{valor:,.{decimais}f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    except Exception:
+        return str(valor)
 
 
 def exibir_rvo(
@@ -64,8 +65,11 @@ def exibir_rvo(
             else:
                 seta = click.style("→", fg="yellow")
 
-            variacao = ((valor - rvo_anterior) / rvo_anterior) * 100
-            delta = f"{variacao:+.1f}%".replace(".", ",")
+            try:
+                variacao = ((valor - rvo_anterior) / rvo_anterior) * 100
+                delta = f"{variacao:+.1f}%".replace(".", ",")
+            except Exception:
+                delta = "—"
         else:
             delta = "—"
 
@@ -79,9 +83,13 @@ def exibir_rvo(
         )
         rvo_anterior = valor
 
+    # cria pasta exports se necessário
+    exports_dir = os.path.join(os.getcwd(), "exports")
+    os.makedirs(exports_dir, exist_ok=True)
+
     # Exportar CSV
     if export:
-        nome_arquivo = f"rvo_{symbol}_{timeframe}_{tipo_volume}.csv"
+        nome_arquivo = os.path.join(exports_dir, f"rvo_{symbol}_{timeframe}_{tipo_volume}.csv")
         df = pd.DataFrame(linhas)
         df.to_csv(nome_arquivo, index=False)
         click.echo(
@@ -93,7 +101,7 @@ def exibir_rvo(
 
     # Exportar JSON
     if json_out:
-        nome_arquivo = f"rvo_{symbol}_{timeframe}_{tipo_volume}.json"
+        nome_arquivo = os.path.join(exports_dir, f"rvo_{symbol}_{timeframe}_{tipo_volume}.json")
         with open(nome_arquivo, "w", encoding="utf-8") as f:
             json.dump(linhas, f, ensure_ascii=False, indent=2)
         click.echo(
